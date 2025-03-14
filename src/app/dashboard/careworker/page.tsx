@@ -45,7 +45,6 @@ export default function CareWorkerPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId: session?.user?.id,
-          name: session?.user?.name,
           locationIn: "Hospital A",
           note,
         }),

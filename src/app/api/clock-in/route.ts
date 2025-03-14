@@ -3,7 +3,7 @@ import prisma from "../../../../prisma";
 
 export async function POST(req: Request) {
   try {
-    const { userId, locationIn, note, name } = await req.json();
+    const { userId, locationIn, note } = await req.json();
 
     console.log("Clock-in Payload:", userId);
 
@@ -23,7 +23,6 @@ export async function POST(req: Request) {
     const shift = await prisma.shift.create({
       data: {
         careWorkerId: userId,
-        careWorker: name,
         clockInTime: new Date(),
         locationIn: locationIn,
         note: note,
