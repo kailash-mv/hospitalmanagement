@@ -9,19 +9,36 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@apollo/server": "^4.11.3",
+    "@as-integrations/next": "^3.2.0",
+    "@prisma/client": "^6.4.1",
+    "@turf/turf": "^7.2.0",
+    "antd": "^5.24.3",
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
+    "chart.js": "^4.4.8",
+    "graphql": "^16.10.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.14.2",
+    "next": "15.2.1",
+    "next-auth": "^4.24.11",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "next": "15.2.1"
+    "react-chartjs-2": "^5.3.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/bcrypt": "^5.0.2",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.2.1",
-    "@eslint/eslintrc": "^3"
+    "prisma": "^6.4.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }
