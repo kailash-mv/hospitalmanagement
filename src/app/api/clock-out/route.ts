@@ -3,17 +3,17 @@ import prisma from "../../../../prisma";
 
 export async function POST(req: Request) {
   try {
-    const { userId, locationOut, note } = await req.json();
+    const { userId, lat, lng, note } = await req.json();
 
-    if (!userId || !locationOut) {
+    if (!userId || lat === undefined || lng === undefined) {
       return NextResponse.json(
-        { error: "User ID and location are required" },
+        { error: "User ID, latitude, and longitude are required" },
         { status: 400 }
       );
     }
 
     const shift = await prisma.shift.findFirst({
-      where: { careWorkerId: userId },
+      where: { careWorkerId: userId, clockOutTime: null },
       orderBy: { clockInTime: "desc" },
     });
 
@@ -28,8 +28,8 @@ export async function POST(req: Request) {
       where: { id: shift.id },
       data: {
         clockOutTime: new Date(),
-        locationOut,
-        note: note,
+        locationOut: `${lat}, ${lng}`,
+        note: note || shift.note, 
       },
     });
 

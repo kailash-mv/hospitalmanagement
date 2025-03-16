@@ -140,15 +140,15 @@ export default function ManagerDashboard() {
   const columns = [
     { title: "Name", dataIndex: "name", key: "name" },
     { title: "Clock In Time", dataIndex: "clockInTime", key: "clockInTime" },
-    { title: "Location", dataIndex: "location", key: "location" },
+    { title: "Location", dataIndex: "locationIn", key: "locationIn" },
   ];
 
   const historyColumns = [
     { title: "Name", dataIndex: "name", key: "name" },
     { title: "Clock In", dataIndex: "clockInTime", key: "clockInTime" },
     { title: "Clock Out", dataIndex: "clockOutTime", key: "clockOutTime" },
-    { title: "Location In", dataIndex: "location in", key: "location in" },
-    { title: "Location Out", dataIndex: "location out", key: "location out" },
+    { title: "Location In", dataIndex: "locationIn", key: "locationIn" },
+    { title: "Location Out", dataIndex: "locationOut", key: "locationOut" },
   ];
 
   const chartData = {

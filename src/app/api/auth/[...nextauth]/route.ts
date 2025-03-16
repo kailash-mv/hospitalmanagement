@@ -3,7 +3,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import prisma from "../../../../../prisma";
 import bcrypt from "bcryptjs";
-import { redirect } from "next/navigation";
 
 const authOptions: NextAuthOptions = {
   providers: [
@@ -54,7 +53,7 @@ const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.name = user.name;
         token.email = user.email;
-        token.role = user.role ?? null;
+        token.role = user.role ?? undefined;
       }
       return token;
     },
@@ -63,8 +62,7 @@ const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         session.user.name = token.name as string;
         session.user.email = token.email as string;
-        session.user.role =
-          (token.role as "MANAGER" | "CAREWORKER" | null) ?? "CAREWORKER";
+        session.user.role = token.role as "MANAGER" | "CAREWORKER" | undefined;
       }
       return session;
     },
@@ -79,13 +77,13 @@ const authOptions: NextAuthOptions = {
             data: {
               name: user.name!,
               email: user.email!,
-              role: null,
+              role: undefined,
             },
           });
         }
 
         user.id = existingUser.id;
-        user.role = existingUser.role ?? "CAREWORKER";
+        user.role = existingUser.role ?? undefined;
       }
       return true;
     },

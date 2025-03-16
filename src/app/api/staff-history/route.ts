@@ -20,6 +20,8 @@ export async function GET() {
       name: shift.careWorker?.name || "Unknown",
       clockInTime: shift.clockInTime.toLocaleString(),
       clockOutTime: shift.clockOutTime?.toLocaleString(),
+      locationIn: shift.locationIn,
+      locationOut: shift.locationOut,
     }));
 
     return NextResponse.json(formattedShifts, { status: 200 });

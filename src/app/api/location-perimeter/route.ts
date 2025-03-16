@@ -40,19 +40,15 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { radius } = await req.json();
+    const { lat, lng, radius } = await req.json();
 
-    // Retrieve existing location perimeter
-    let existingPerimeter = await prisma.locationPerimeter.findUnique({
-      where: { managerId: session.user.id },
-    });
-
-    let lat = existingPerimeter?.lat ?? 0;
-    let lng = existingPerimeter?.lng ?? 0;
+    if (!lat || !lng || !radius) {
+      return NextResponse.json({ error: "Invalid data" }, { status: 400 });
+    }
 
     const perimeter = await prisma.locationPerimeter.upsert({
       where: { managerId: session.user.id },
-      update: { lat, lng, radius },
+      update: { lat, lng, radius }, // Update lat, lng, radius correctly
       create: {
         managerId: session.user.id,
         lat,
