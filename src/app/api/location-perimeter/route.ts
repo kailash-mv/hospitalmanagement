@@ -48,7 +48,7 @@ export async function POST(req: Request) {
 
     const perimeter = await prisma.locationPerimeter.upsert({
       where: { managerId: session.user.id },
-      update: { lat, lng, radius }, // Update lat, lng, radius correctly
+      update: { lat, lng, radius }, 
       create: {
         managerId: session.user.id,
         lat,
