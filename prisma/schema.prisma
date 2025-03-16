@@ -19,21 +19,31 @@ enum Role {
 }
 
 model User {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  id             String             @id @default(auto()) @map("_id") @db.ObjectId
   name           String
-  email          String   @unique
+  email          String             @unique
   hashedPassword String?
-  role           Role
-  shifts         Shift[]  @relation("UserShifts") 
+  role           Role?
+  shifts         Shift[]            @relation("UserShifts")
+  perimeter      LocationPerimeter? @relation("ManagerPerimeter")
 }
 
 model Shift {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  careWorker   User     @relation(name: "UserShifts", fields: [careWorkerId], references: [id]) 
-  careWorkerId String   @db.ObjectId
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  careWorker   User      @relation(name: "UserShifts", fields: [careWorkerId], references: [id])
+  careWorkerId String    @db.ObjectId
   clockInTime  DateTime
   clockOutTime DateTime?
   note         String?
   locationIn   String
   locationOut  String?
+}
+
+model LocationPerimeter {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  manager   User   @relation("ManagerPerimeter", fields: [managerId], references: [id])
+  managerId String @unique @db.ObjectId
+  lat       Float
+  lng       Float
+  radius    Float
 }
