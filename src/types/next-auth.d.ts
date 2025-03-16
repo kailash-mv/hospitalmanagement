@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 
 declare module "next-auth" {
   interface User {
-    role: "MANAGER" | "CAREWORKER";
+    role?: "MANAGER" | "CAREWORKER";
   }
 
   interface Session {

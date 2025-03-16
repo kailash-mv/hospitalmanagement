@@ -36,55 +36,93 @@ export default function CareWorkerPage() {
       message.error("Failed to fetch shifts.");
     }
   };
-
   const handleClockIn = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/clock-in", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: session?.user?.id,
-          locationIn: "Hospital A",
-          note,
-        }),
-      });
-
-      if (!res.ok) throw new Error("Clock-in failed");
-
-      setClockedIn(true);
-      message.success("Successfully clocked in!");
-      setNote("");
-      fetchShifts();
-    } catch (error) {
-      console.log(error);
+    if (!navigator.geolocation) {
+      message.error("Geolocation is not supported by your browser.");
+      return;
     }
-    setLoading(false);
+
+    setLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+
+        try {
+          const res = await fetch("/api/clock-in", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userId: session?.user?.id,
+              lat: latitude,
+              lng: longitude,
+              note,
+            }),
+          });
+
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error);
+
+          setClockedIn(true);
+          message.success("Successfully clocked in!");
+          setNote("");
+          fetchShifts();
+        } catch (error) {
+          alert(error);
+        } finally {
+          setLoading(false);
+        }
+      },
+      (error) => {
+        message.error("Failed to get location. Please allow location access.");
+        setLoading(false);
+      }
+    );
   };
 
   const handleClockOut = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/clock-out", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: session?.user?.id,
-          locationOut: "Hospital B",
-          note,
-        }),
-      });
-
-      if (!res.ok) throw new Error("Clock-out failed");
-
-      setClockedIn(false);
-      message.success("Successfully clocked out!");
-      setNote("");
-      fetchShifts();
-    } catch (error) {
-      console.log(error);
+    if (!navigator.geolocation) {
+      message.error("Geolocation is not supported by your browser.");
+      return;
     }
-    setLoading(false);
+
+    setLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+
+        try {
+          const res = await fetch("/api/clock-out", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userId: session?.user?.id,
+              lat: latitude,
+              lng: longitude,
+              note,
+            }),
+          });
+
+          if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.error || "Clock-out failed");
+          }
+
+          message.success("Successfully clocked out!");
+          setClockedIn(false);
+          setNote("");
+          fetchShifts();
+        } catch (error) {
+          // message.error(error.message);
+          console.error("Clock-out error:", error);
+        } finally {
+          setLoading(false);
+        }
+      },
+      (error) => {
+        message.error("Failed to get location. Please allow location access.");
+        setLoading(false);
+      }
+    );
   };
 
   const columns = [
