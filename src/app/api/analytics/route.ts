@@ -14,7 +14,6 @@ export async function GET() {
       include: { careWorker: true },
     });
 
-    // 1️⃣ Average hours per day
     const dailyHours: Record<string, number[]> = {};
     shifts.forEach((shift) => {
       const date = shift.clockInTime.toISOString().split("T")[0];
@@ -35,7 +34,6 @@ export async function GET() {
         dailyHours[date].length,
     }));
 
-    // 2️⃣ Number of people clocking in each day
     const peoplePerDay: Record<string, Set<string>> = {};
     shifts.forEach((shift) => {
       const date = shift.clockInTime.toISOString().split("T")[0];
@@ -48,7 +46,6 @@ export async function GET() {
       count: peoplePerDay[date].size,
     }));
 
-    // 3️⃣ Total hours clocked in per staff (last 7 days)
     const totalHoursPerStaff: Record<string, number> = {};
     shifts.forEach((shift) => {
       const name = shift.careWorker.name;
