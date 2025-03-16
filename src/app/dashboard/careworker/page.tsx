@@ -196,6 +196,7 @@ export default function CareWorkerPage() {
         disabled={clockedIn}
         loading={loading}
         style={{ marginRight: 10 }}
+        className="!bg-[#008C91]"
       >
         Clock In
       </Button>
@@ -205,6 +206,7 @@ export default function CareWorkerPage() {
         onClick={handleClockOut}
         disabled={!clockedIn}
         loading={loading}
+        className="!bg-[#008C91]"
       >
         Clock Out
       </Button>
