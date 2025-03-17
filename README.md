@@ -1,4 +1,4 @@
-# Hospital Management Web Application
+# Hospital Management Web Application (MVP)
 
 ## Overview
 This is a hospital management web application. It enables managers to set **location perimeters** and oversee his/her employees and their shifts remotely. It also enables careworker clock-ins and clock-outs. It also provides detailed **shift tracking and analytics**.
