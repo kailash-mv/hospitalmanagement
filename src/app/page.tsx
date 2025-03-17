@@ -23,7 +23,7 @@ export default function Home() {
       <Content className="!w-full !max-w-3xl !text-center !p-6 sm:!py-30">
         <Card className="!p-10 !shadow-2xl !rounded-lg !bg-white">
           <Title level={1} className="!text-[#00AFAA] !mb-2">
-            Hospital Management (MVP)
+            Hospital Management MVP
           </Title>
           <Text className="!text-lg !text-gray-600 !mb-6 !block">
             Shift Management and Careworker Scheduling.
