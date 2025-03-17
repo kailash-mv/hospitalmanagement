@@ -36,6 +36,20 @@ The application is built with:
 
 ## Installation & Setup
 ### Prerequisites
+Test users:
+- **Manager**
+  
+    - Email: **manager@gmail.com**
+  
+    - Password: 123
+  
+- **Careworker**
+  
+   - Email: **vigi@gmail.com**
+  
+   - Password:123
+
+### Prerequisites
 Ensure you have the following installed:
 - **Node.js** (v18+)
 - **MongoDB**
