@@ -6,7 +6,7 @@ This is a hospital management web application. It enables managers to set **loca
 The application is built with:
 - **Next.js (TypeScript)** for the frontend
 - **prisma** for database management
-- **Auth0 & Google OAuth** for authentication
+- **Google OAuth** for authentication
 - **MongoDB** as the database
 - **Ant Design & Tailwind CSS** for responsive and friendly UI components
 - **Vercel** for deployment
