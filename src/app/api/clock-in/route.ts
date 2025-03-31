@@ -8,7 +8,7 @@ export async function POST(req: Request) {
   try {
     const { userId, lat, lng, note } = await req.json();
 
-    console.log("Clock-in Payload:", userId);
+    // console.log("Clock-in Payload:", userId);
 
     if (!userId) {
       return NextResponse.json(

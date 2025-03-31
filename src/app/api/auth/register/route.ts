@@ -1,9 +1,10 @@
 import { connectToDatabase } from "@/helpers/server-helper";
 import { NextResponse } from "next/server";
 import prisma from "../../../../../prisma";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { Role } from "@prisma/client";
+
 
 export const POST = async (req: Request) => {
   try {

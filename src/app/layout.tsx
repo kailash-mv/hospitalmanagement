@@ -5,6 +5,8 @@ import { SessionProvider } from "next-auth/react";
 import type { ReactNode } from "react";
 import SessionProviderWrapper from "@/components/SessionProviderWrapper";
 import SignOutButton from "@/components/SignOutButton";
+import ApolloProviderWrapper from "../lib/ApolloProvider";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,11 +34,13 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <SessionProviderWrapper>
+          <ApolloProviderWrapper>
           <div className="p-4 flex justify-between items-center bg-gray-100">
             <h1 className="text-xl font-bold">Hospital Management</h1>
             <SignOutButton />
           </div>
           {children}
+          </ApolloProviderWrapper>
         </SessionProviderWrapper>
       </body>
     </html>

@@ -18,8 +18,8 @@ export async function GET() {
     const formattedShifts = shifts.map((shift) => ({
       ...shift,
       name: shift.careWorker?.name || "Unknown",
-      clockInTime: shift.clockInTime.toLocaleString(),
-      clockOutTime: shift.clockOutTime?.toLocaleString(),
+      clockInTime: shift.clockInTime.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
+      clockOutTime: shift.clockOutTime?.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
       locationIn: shift.locationIn,
       locationOut: shift.locationOut,
     }));

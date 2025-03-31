@@ -5,37 +5,71 @@ import { Table, Button, message, Card, Typography, Spin, Input } from "antd";
 import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { gql, useQuery, useMutation } from "@apollo/client";
 
 const { Title } = Typography;
+const GET_CAREWORKER_SHIFTS = gql`
+  query GetShifts {
+    shiftsByCareWorkerName {
+      id
+      clockInTime
+      clockOutTime
+      locationIn
+      locationOut
+      note
+    }
+  }
+`;
+const CLOCK_IN = gql`
+  mutation ClockIn($userId: String!, $lat: Float!, $lng: Float!, $note: String) {
+    clockIn(userId: $userId, lat: $lat, lng: $lng, note: $note) {
+      id
+      clockInTime
+      locationIn
+      note
+    }
+  }
+`;
+const CLOCK_OUT = gql`
+  mutation ClockOut($userId: String!, $lat: Float!, $lng: Float!, $note: String) {
+    clockOut(userId: $userId, lat: $lat, lng: $lng, note: $note) {
+      id
+      clockOutTime
+      locationOut
+      note
+    }
+  }
+`;
 
 export default function CareWorkerPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [clockedIn, setClockedIn] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [shifts, setShifts] = useState([]);
   const [note, setNote] = useState("");
+
+  const { loading: shiftsLoading, data, refetch } = useQuery(GET_CAREWORKER_SHIFTS, {
+    variables: { userId: session?.user?.id },
+    skip: !session, 
+  });
+  console.log(typeof session?.user?.id);
 
   useEffect(() => {
     if (status === "loading") return;
 
     if (!session) {
       router.push("/api/auth/signin");
-    } else {
-      fetchShifts();
-    }
+    } 
   }, [session, status, router]);
 
-  const fetchShifts = async () => {
-    try {
-      const res = await fetch("/api/shifts");
-      if (!res.ok) throw new Error("Failed to fetch shifts");
-      const data = await res.json();
-      setShifts(data);
-    } catch (error) {
-      message.error("Failed to fetch shifts.");
-    }
-  };
+  const [clockInMutation] = useMutation(CLOCK_IN, {
+    refetchQueries: ["GetShifts"],
+  });
+  const [clockOutMutation] = useMutation(CLOCK_OUT, {
+    refetchQueries: ["GetShifts"],
+  });
+  
+
   const handleClockIn = async () => {
     if (!navigator.geolocation) {
       message.error("Geolocation is not supported by your browser.");
@@ -48,25 +82,21 @@ export default function CareWorkerPage() {
         const { latitude, longitude } = position.coords;
 
         try {
-          const res = await fetch("/api/clock-in", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
+          await clockInMutation({
+            variables: {
               userId: session?.user?.id,
               lat: latitude,
               lng: longitude,
-              note,
-            }),
+              note: note || "",
+            },
           });
-
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.error);
 
           setClockedIn(true);
           message.success("Successfully clocked in!");
           setNote("");
-          fetchShifts();
         } catch (error) {
+          message.error("Clock-in failed.");
+          console.error("Clock-in error:", error);
           alert(error);
         } finally {
           setLoading(false);
@@ -79,41 +109,36 @@ export default function CareWorkerPage() {
     );
   };
 
+
   const handleClockOut = async () => {
     if (!navigator.geolocation) {
       message.error("Geolocation is not supported by your browser.");
       return;
     }
-
+  
     setLoading(true);
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-
+  
         try {
-          const res = await fetch("/api/clock-out", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
+          await clockOutMutation({
+            variables: {
               userId: session?.user?.id,
               lat: latitude,
               lng: longitude,
-              note,
-            }),
+              note: note || "",
+            },
           });
-
-          if (!res.ok) {
-            const errorData = await res.json();
-            throw new Error(errorData.error || "Clock-out failed");
-          }
-
+  
           message.success("Successfully clocked out!");
           setClockedIn(false);
           setNote("");
-          fetchShifts();
+          refetch();
         } catch (error) {
-          // message.error(error.message);
+          message.error("Clock-out failed.");
           console.error("Clock-out error:", error);
+          alert(error);
         } finally {
           setLoading(false);
         }
@@ -130,14 +155,13 @@ export default function CareWorkerPage() {
       title: "Clock In Time",
       dataIndex: "clockInTime",
       key: "clockInTime",
-      render: (time: Date) => new Date(time).toLocaleString(),
     },
     {
       title: "Clock Out Time",
       dataIndex: "clockOutTime",
       key: "clockOutTime",
-      render: (time: Date) =>
-        time ? new Date(time).toLocaleString() : "Still Clocked In",
+      render: (time: String) =>
+        time ? time : "Still Clocked In",
     },
     {
       title: "Location In",
@@ -215,7 +239,7 @@ export default function CareWorkerPage() {
         Shift History
       </Title>
       <Table
-        dataSource={shifts}
+        dataSource={data?.shiftsByCareWorkerName || []}
         columns={columns}
         rowKey="id"
         pagination={{ pageSize: 5 }}
