@@ -2,6 +2,21 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQuery, useMutation, gql } from "@apollo/client";
+
+const SET_REGISTERED_USER = gql`
+    mutation Register($name: String!, $email: String!, $password: String!, $role: Role!) {
+      register(name: $name, email: $email, password: $password, role: $role) {
+        user {
+          id
+          name
+          email
+          role
+        }
+        token
+      }
+    }
+  `;
 
 export default function Register() {
   const router = useRouter();
@@ -14,6 +29,20 @@ export default function Register() {
   });
   const [message, setMessage] = useState("");
 
+  const [registerUser, { loading, error }] = useMutation(SET_REGISTERED_USER, {
+    onCompleted: (data) => {
+      setMessage("User registered successfully!");
+      setFormData({ name: "", email: "", password: "", role: "" });
+
+      setTimeout(() => {
+        router.push("../api/auth/signin");
+      }, 2000);
+    },
+    onError: (err) => {
+      setMessage(err.message || "Something went wrong");
+    },
+  });
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -22,27 +51,7 @@ export default function Register() {
     e.preventDefault();
     setMessage("");
 
-    try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-      console.log(data);
-      if (res.ok) {
-        setMessage("User registered successfully!");
-        setFormData({ name: "", email: "", password: "", role: "" });
-        setTimeout(() => {
-          router.push("../api/auth/signin");
-        }, 2000);
-      } else {
-        setMessage(data.message || "Something went wrong");
-      }
-    } catch (error) {
-      setMessage("Error: Unable to register user");
-    }
+    await registerUser({variables: formData})
   };
 
   return (
@@ -86,8 +95,8 @@ export default function Register() {
               <input
                 type="radio"
                 name="role"
-                value="careworker"
-                checked={formData.role === "careworker"}
+                value="CAREWORKER"
+                checked={formData.role === "CAREWORKER"}
                 onChange={handleChange}
                 className="mr-2"
               />
@@ -97,8 +106,8 @@ export default function Register() {
               <input
                 type="radio"
                 name="role"
-                value="manager"
-                checked={formData.role === "manager"}
+                value="MANAGER"
+                checked={formData.role === "MANAGER"}
                 onChange={handleChange}
                 className="mr-2"
               />
@@ -110,7 +119,7 @@ export default function Register() {
           type="submit"
           className="w-full text-white p-2 rounded !bg-[#008C91] cursor-pointer"
         >
-          Register
+          {loading ? "Registering..." : "Register"}
         </button>
         {message && <p className="mt-2 text-center text-red-500">{message}</p>}
       </form>

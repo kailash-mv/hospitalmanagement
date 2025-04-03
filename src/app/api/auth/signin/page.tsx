@@ -3,6 +3,13 @@
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { gql, useMutation } from "@apollo/client";
+
+const SET_USER_ROLE = gql`
+  mutation SetUserRole($role: String!) {
+    setUserRole(role: $role)
+  }
+`;
 
 export default function SignInPage() {
   const { data: session, update } = useSession();
@@ -11,6 +18,9 @@ export default function SignInPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showRoleSelection, setShowRoleSelection] = useState(false);
+  const [setUserRole] = useMutation(SET_USER_ROLE);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSettingRole, setIsSettingRole] = useState(false);
 
   useEffect(() => {
     if (session?.user) {
@@ -28,6 +38,7 @@ export default function SignInPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+     setIsLoading(true);
 
     const res = await signIn("credentials", {
       email,
@@ -35,24 +46,25 @@ export default function SignInPage() {
       redirect: false,
     });
 
+    setIsLoading(false);
+
     if (res?.error) {
       setError("Invalid email or password.");
     }
   };
 
   const handleRoleSelection = async (role: "MANAGER" | "CAREWORKER") => {
-    const res = await fetch("/api/set-role", {
-      method: "POST",
-      body: JSON.stringify({ role }),
-      headers: { "Content-Type": "application/json" },
-    });
-
-    if (res.ok) {
+    setIsSettingRole(true);
+    try {
+      await setUserRole({ variables: { role } });
       update();
       router.push(
         role === "MANAGER" ? "/dashboard/manager" : "/dashboard/careworker"
       );
+    } catch (error) {
+      console.error("Error setting role:", error);
     }
+    setIsSettingRole(false); 
   };
 
   return (
@@ -83,7 +95,7 @@ export default function SignInPage() {
                 type="submit"
                 className="w-full !bg-[#00AFAA] text-white p-2 rounded cursor-pointer !hover:bg-[#008C91]"
               >
-                Sign In
+               {isLoading ? "Signing In..." : "Sign In"}
               </button>
             </form>
 
@@ -98,6 +110,8 @@ export default function SignInPage() {
               Sign in with Google
             </button>
           </>
+        ) : isSettingRole ? (
+          <p className="text-[#00AFAA] font-semibold">Setting role...</p>
         ) : (
           <div className="text-center">
             <h2 className="text-xl font-bold mb-4 !text-[#00AFAA]">
@@ -107,13 +121,13 @@ export default function SignInPage() {
               onClick={() => handleRoleSelection("MANAGER")}
               className="px-4 py-2 !bg-[#00AFAA] text-white rounded-lg m-2 cursor-pointer !hover:bg-[#008C91]"
             >
-              Manager
+              MANAGER
             </button>
             <button
               onClick={() => handleRoleSelection("CAREWORKER")}
               className="px-4 py-2 !bg-[#00AFAA] text-white rounded-lg m-2 cursor-pointer !hover:bg-[#008C91]"
             >
-              Care Worker
+              CAREWORKER
             </button>
           </div>
         )}
