@@ -1,36 +1,101 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Hospital Management Web Application (MVP)
 
-## Getting Started
+## Overview
+This is a hospital management web application. It enables managers to set **location perimeters** and oversee his/her employees and their shifts remotely. It also enables careworker clock-ins and clock-outs. It also provides detailed **shift tracking and analytics**.
 
-First, run the development server:
+The application is built with:
+- **Next.js (TypeScript)** for the frontend
+- **Google OAuth** for authentication
+- **GraphQL** – Flexible query language
+- **Prisma** for database management
+- **PostgreSQL(Neon)** – Scalable, serverless SQL database
+- **Ant Design & Tailwind CSS** for responsive and friendly UI components
+- **Vercel** for deployment
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Features Attempted
+### Core Features Implemented
+- **Authentication:**
+  - Google OAuth authentication via NextAuth.js
+  - Custom credentials login using Prisma
+  - Role-based access control (Manager, Care Worker)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Shift Management:**
+  - Managers can set **location perimeters** for staff clock-in
+  - Care Workers can **log their shifts** (clock-in/out) and can also add an optional note
+  - Display current careworkers clocked in
+  - Display careworker history
+  - Shift data persistence with MongoDB
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Engagement analytics:**
+  - Average shift duration
+  - Total shifts per day
+  - Total hours clocked per staff (last 7 days)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Features In Progress 
+- **Automated notifications** for clock-in and clock-out reminders
+- Cnversion to **Progressive Web Application (PWA)**
 
-## Learn More
+## Installation & Setup
+### Prerequisites
+Test users:
+- **Manager**
+  
+    - Email: **manager@gmail.com**
+  
+    - Password: 123
+  
+- **Careworker**
+  
+   - Email: **vigi@gmail.com**
+  
+   - Password:123
 
-To learn more about Next.js, take a look at the following resources:
+### Prerequisites
+Ensure you have the following installed:
+- **Node.js** (v18+)
+- **NextAuth / Google OAuth configured**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Steps to Run Locally
+1. **Clone the repository:**
+   ```sh
+   git clone https://github.com/your-repo.git
+   cd shift-tracker
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2. **Install dependencies:**
+   ```sh
+   npm install
+   ```
 
-## Deploy on Vercel
+3. **Setup environment variables:**
+   Create a `.env` file and configure:
+   ```plaintext
+   DATABASE_URL=postgresql:://your_postgresql_connection
+   NEXTAUTH_SECRET=your_secret
+   GOOGLE_CLIENT_ID=your_client_id
+   GOOGLE_CLIENT_SECRET=your_client_secret
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4. **Run the development server:**
+   ```sh
+   npm run dev
+   ```
+   Open `http://localhost:3000` to access the app.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deployment
+The application is deployed using **Vercel**. Steps:
+1. **Push to GitHub**
+2. **Link repository to Vercel**
+3. **Set up environment variables on Vercel**
+4. **Trigger deployment**
+
+### Prisma Issue on Vercel (Fix)
+If you face **`PrismaClientInitializationError`**, ensure you add the following:
+- In `package.json`, under `scripts`:
+  ```json
+  "postinstall": "prisma generate"
+  ```
+- Update **Vercel build command**:
+  ```sh
+  npm run build && prisma generate
+  ```
